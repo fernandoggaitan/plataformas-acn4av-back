@@ -25,6 +25,8 @@ app.get('/test', (req, res) => {
 
 app.get('/saludo/:nombre', (req, res) => {
 
+    //const nombre = req.params.nombre
+
     const {nombre} = req.params;
 
     res.send(`Hola, ${nombre}`);
@@ -50,6 +52,43 @@ app.get('/eventos', async(req, res) => {
 
 });
 
+app.get( '/eventos/:idEvento', async(req, res) => {
+
+    const {idEvento} = req.params;
+
+    if( isNaN(idEvento) ){
+        res.status(400).json({
+            success: false,
+            message: 'Los datos ingresados son incorrectos'
+        })
+    }
+
+    const query = 'SELECT id, nombre, cupo FROM eventos WHERE id = ?';
+
+    try{
+        const [data] = await connection.query(query, [idEvento]);
+
+        if( data.length > 0 ){
+            res.json({
+                success: true,
+                data: data[0]
+            });
+        }else{
+            res.status(404).json({
+                success: false,
+                message: 'Este evento no existe'
+            })
+        }
+        
+    }catch(error){
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al intentar recuperar el registro'
+        });
+    }
+
+});
 
 // Middleware para manejar el error 404
 app.use((req, res, next) => {
