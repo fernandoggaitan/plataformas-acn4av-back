@@ -8,6 +8,7 @@ exports.all = async() => {
     const query = `
         SELECT id, nombre, cupo
         FROM eventos
+        ORDER BY nombre
     `;
     try{
         [results] = await connection.query(query);

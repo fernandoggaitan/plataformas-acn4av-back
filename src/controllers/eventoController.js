@@ -12,6 +12,9 @@ exports.index = async(req, res) => {
 
 exports.store = async(req, res) => {
 
+    //const nombre = req.body.nombre;
+    //const {nombre} = req.body;
+
     //Verifica que haya un body.
     if (!req.body) {
         return res.status(400).json({

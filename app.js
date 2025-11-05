@@ -32,63 +32,10 @@ app.get('/saludo/:nombre', (req, res) => {
     res.send(`Hola, ${nombre}`);
 });
 
-app.get('/eventos', async(req, res) => {
-
-    const query = 'SELECT id, nombre, cupo FROM eventos';
-
-    try{
-        const [data] = await connection.query(query);
-        res.json({
-            success: true,
-            data
-        });
-    }catch(error){
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            message: 'Error al intentar recuperar los registros'
-        });
-    }
-
-});
-
-app.get( '/eventos/:idEvento', async(req, res) => {
-
-    const {idEvento} = req.params;
-
-    if( isNaN(idEvento) ){
-        res.status(400).json({
-            success: false,
-            message: 'Los datos ingresados son incorrectos'
-        })
-    }
-
-    const query = 'SELECT id, nombre, cupo FROM eventos WHERE id = ?';
-
-    try{
-        const [data] = await connection.query(query, [idEvento]);
-
-        if( data.length > 0 ){
-            res.json({
-                success: true,
-                data: data[0]
-            });
-        }else{
-            res.status(404).json({
-                success: false,
-                message: 'Este evento no existe'
-            })
-        }
-        
-    }catch(error){
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            message: 'Error al intentar recuperar el registro'
-        });
-    }
-
-});
+//Rutas de los eventos.
+app.use(require('./src/routes/eventoRoutes'));
+//Rutas de los usuarios.
+app.use(require('./src/routes/usuarioRoutes'));
 
 // Middleware para manejar el error 404
 app.use((req, res, next) => {
