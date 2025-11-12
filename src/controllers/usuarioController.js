@@ -1,5 +1,7 @@
 const usuarioModel = require("../models/usuarioModel");
 
+const jwt = require('jsonwebtoken');
+
 exports.register = async(req, res) => {
     //Verifica que haya un body.
     if (!req.body) {
@@ -40,13 +42,28 @@ exports.login = async(req, res) => {
     try{
         const usuario = await usuarioModel.login( {email, contrasena} );
         if(usuario == null){
-            res.json({ success: false, message: 'Credenciales incorrectas' });
+            res.status(401).json({ success: false, message: 'Credenciales incorrectas' });
         }else{
+
+            const playload =  { 
+                ID: usuario.id, 
+                nombre: usuario.nombre, 
+                is_admin: (usuario.is_admin == '1') 
+            };
+
+            const accessToken = jwt.sign(
+                playload,
+                process.env.JWT_ACCESS_TOKEN_SECRET,
+                { expiresIn: '15m' }
+            );
+
             res.json({
                 success: true,
                 message: 'Inicio de sesión exitoso',
-                nombre: usuario.nombre
+                nombre: usuario.nombre,
+                accessToken
             });
+
         }
     }catch(error){
         console.log(error);
@@ -54,6 +71,9 @@ exports.login = async(req, res) => {
     }
 }
 
+exports.welcome = (req, res) => {
+    res.json({ success: true, message: 'Bienvenida/o ' + req.user.nombre });
+}
 
 // Función de validación de usuario.
 const validarUsuario = ( {nombre, email, contrasena} ) => {
