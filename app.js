@@ -11,6 +11,18 @@ app.use(express.json());
 //Conexión a la base de datos.
 const connection = require('./db');
 
+const cors = require('cors');
+const allowedOrigins = ['http://localhost:5173'];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  }
+}));
+
 app.listen(port, () => {
     console.log(`Servidor iniciado en: http://localhost:${port}`);
 });
